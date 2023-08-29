@@ -1,59 +1,57 @@
 #!/usr/bin/python3
+
 import sys
-"""nqueens backtracking algorithm"""
 
 
-if __name__ == "__main__":
+def solve(row, column):
+    solver = [[]]
+    for q in range(row):
+        solver = place_queen(q, column, solver)
+    return solver
+
+
+def place_queen(q, column, prev_solver):
+    solver_queen = []
+    for array in prev_solver:
+        for x in range(column):
+            if is_safe(q, x, array):
+                solver_queen.append(array + [x])
+    return solver_queen
+
+
+def is_safe(q, x, array):
+    if x in array:
+        return (False)
+    else:
+        return all(abs(array[column] - x) != q - column
+                   for column in range(q))
+
+
+def init():
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
-        exit(1)
-    if sys.argv[1].isdigit() is False:
+        sys.exit(1)
+    if sys.argv[1].isdigit():
+        the_queen = int(sys.argv[1])
+    else:
         print("N must be a number")
-        exit(1)
-    n = int(sys.argv[1])
-    if n < 4:
+        sys.exit(1)
+    if the_queen < 4:
         print("N must be at least 4")
-        exit(1)
+        sys.exit(1)
+    return(the_queen)
 
-    # initialize the answer list (of coordinates)
-    board = []
-    for i in range(n):
-        board.append([i, None])
 
-    def is_safe(x, y):
-        """determines if position (x, y) is safe"""
+def n_queens():
 
-        # Check current row
-        for z in range(n):
-            if y == board[z][1]:
-                return False
+    the_queen = init()
+    solver = solve(the_queen, the_queen)
+    for array in solver:
+        clean = []
+        for q, x in enumerate(array):
+            clean.append([q, x])
+        print(clean)
 
-        # Check diagonals
-        i = 0
-        while(i < x):
-            if abs(board[i][1] - y) == abs(i - x):
-                return False
-            i += 1
-        # Position is safe!
-        return True
 
-    def solve(x):
-        """solves and backtracks when encountering conflicts"""
-        # loop through cols
-        for y in range(n):
-            # clear column
-            for i in range(x, n):
-                board[i][1] = None
-
-            # checks if pos is safe (current col y + x row)
-            if is_safe(x, y):
-                board[x][1] = y
-                # accept and print if we have the final # of queens
-                if (x == n - 1):
-                    print(board)
-                # move to next column if not
-                else:
-                    solve(x + 1)
-
-    # start the recursive process at x = 0
-    solve(0)
+if __name__ == '__main__':
+    n_queens()
